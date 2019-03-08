@@ -1,1 +1,1 @@
-# COMP90024-Cluster-and-Cloud-Computing
+# COMP90024-Cluster and Cloud Computing
