@@ -1,0 +1,10 @@
+'''
+import libraries
+'''
+from mpi4py import MPI
+import json
+
+
+comm = MPI.COMM_WORD
+comm_rank = comm.Get_rank()
+comm_size = comm.Get_size()
