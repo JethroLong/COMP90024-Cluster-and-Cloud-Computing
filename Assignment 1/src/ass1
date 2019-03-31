@@ -5,6 +5,52 @@ from mpi4py import MPI
 import json
 import sys
 
-comm = MPI.COMM_WORD
-comm_rank = comm.Get_rank()
-comm_size = comm.Get_size()
+
+def get_FileName(argv):
+    if len(argv) > 1:
+        return argv[1]
+    else:
+        return "bigTwitter.json"
+
+
+def get_Grid(gridFile):
+    gridData = json.load(open(gridFile, 'r'))
+    grid = []
+    for box in gridData["features"]:
+        grid.append(box["properties"])
+    return grid
+
+
+def master_process():
+    pass
+
+
+def slave_process():
+    pass
+
+
+def which_grid_box(cor_x, cor_y, grid):
+    for box in grid:
+        if cor_x >= box["xmin"] and cor_x <= box["xmax"] \
+         and cor_y >= box["ymin"] and cor_y <= box["ymin"]:
+            area = box["id"]
+    return area
+
+
+def main(argv):
+    comm = MPI.COMM_WORLD
+    # Get rank of process
+    rank = comm.Get_rank()
+    processes = comm.Get_size()
+    grid = get_Grid(argv[0])  # suppose argv == "melbGrid.json"
+    if rank == 0:
+        # Master
+        master_process(comm=comm, argv=argv)
+    else:
+        # slave
+        slave_process(comm = comm, argv = argv)
+
+
+# main program
+if __name__ == "__main__":
+    main(sys.argv)
