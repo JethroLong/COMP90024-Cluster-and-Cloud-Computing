@@ -3,7 +3,6 @@ import libraries
 '''
 from mpi4py import MPI
 import json
-import math
 import sys
 
 
@@ -43,7 +42,11 @@ def master_process(comm, grid, argv):
         data_partition(comm, grid, data_File, file_lines)
 
 
-def slave_process():
+def order_num_tweets():
+    pass
+
+
+def order_hashtags():
     pass
 
 
@@ -56,17 +59,52 @@ def which_grid_box(cor_x, cor_y, grid):
     return area
 
 
+def process_tweet(comm, grid, tweet_file):
+    grid_dict = {}  # {"A1": num_tweets, "A2": num_tweets}
+    grid_hashtag_dict = {}
+    with open(tweet_file, 'r') as f:
+        tweet = json.load(f)
+        row_indicator = 0
+        for row in tweet["rows"]:
+            recipient = row_indicator % comm.Get_size
+            recvBuf = comm.sendrecv(row, dest=recipient)
+            row_indicator += 1
+            temp_cor_list = recvBuf["value"]["geometry"]["coordinates"]
+            area = which_grid_box(temp_cor_list[0], temp_cor_list[1])
+
+            if area not in grid_dict.keys():
+                grid_dict[area] = 1
+            else:
+                grid_dict[area] += 1
+            # code for find hashtag
+            # ...
+        grid_dict = comm.gather(grid_dict, root=0)
+    return grid_dict, grid_hashtag_dict
+
+
 def main(argv):
     comm = MPI.COMM_WORLD
     # Get rank of process
     rank = comm.Get_rank()
     processes = comm.Get_size()
     grid = get_Grid(argv[0])  # suppose argv == "melbGrid.json"
+
+    grid_dict = None  # [{"A1":23, "B1":34},{}]
+    grid_hashtag_dict = None
+
     if processes < 2:
-        #to be continue
+        # to be continue
         pass
     else:
-        pass
+        grid_dict, grid_hashtag_dict = process_tweet(comm, grid, argv[1])
+    if rank == 0:
+        new_grid_dict = {}
+        for entry in grid_dict:
+            for k, v in entry.items():
+                if k not in new_grid_dict:
+                    new_grid_dict[k] = v
+                else:
+                    new_grid_dict[k] += v
 
 
 if __name__ == "__main__":
