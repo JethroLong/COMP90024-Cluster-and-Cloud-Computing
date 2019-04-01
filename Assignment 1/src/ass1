@@ -13,13 +13,24 @@ def get_FileName(argv):
         return "bigTwitter.json"
 
 
+# load the grid data, specifically the coordinates of vetices
+# of each grid box
 def get_Grid(gridFile):
-    gridData = json.load(open(gridFile, 'r'))
-    grid = []
-    for box in gridData["features"]:
-        grid.append(box["properties"])
+    with open(gridFile, 'r') as melbGrid:
+        gridData = json.load(melbGrid)
+        grid = []
+        for box in gridData["features"]:
+            grid.append(box["properties"])
     return grid
 
+
+# count the total number of data records in a json lines file
+def count_lines(tweet_file):
+    count = 0
+    with open(tweet_file, 'r') as data_file:
+        for line in data_file:
+            count += 1
+    return count
 
 def master_process():
     pass
