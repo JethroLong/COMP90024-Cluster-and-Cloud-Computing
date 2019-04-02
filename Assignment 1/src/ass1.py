@@ -55,7 +55,7 @@ def which_grid_box(cor_x, cor_y, grid):
     area = None
     for box in grid:
         if cor_x >= box["xmin"] and cor_x <= box["xmax"] \
-         and cor_y >= box["ymin"] and cor_y <= box["ymin"]:
+         and cor_y >= box["ymin"] and cor_y <= box["ymax"]:
             area = box["id"]
     return area
 
