@@ -70,15 +70,16 @@ def distribute_tweet(comm, tweet_file, size, grid, grid_dict, grid_hashtag_dict)
         tweet = json.loads(f.read())
         row_indicator = 0
         for row in tweet["rows"]:
+            row_indicator += 1
             recipient = row_indicator % size
             if row_indicator == 587:
-                print("row #587: ", "recipient :", recipient, "  ", row)
+                print("row #587, recipient {} with \
+                      tweet row: {}".format(recipient, row))
             print("row #", row_indicator, " to be send to ", recipient)
             if comm.Get_rank() != recipient:
                 comm.send(row, dest=recipient)
             else:
                 process_tweet(grid, row, grid_dict, grid_hashtag_dict)
-            row_indicator += 1
     comm.bcast("no more tweets", root=0)
 
 
@@ -113,7 +114,7 @@ def has_more_tweets(recvBuf):
 
 
 def Get_tweet_row(comm, recvBuf):
-    recvBuf = comm.recv(source=0)
+    recvBuf = comm.Recv(recvBuf, source=0)
     return recvBuf
 
 
