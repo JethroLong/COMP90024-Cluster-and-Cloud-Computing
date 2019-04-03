@@ -24,7 +24,7 @@ def doOperation_on_tweets(tweet_file, grid):
         temp_hashtags_list = each["doc"]["entities"]["hashtags"]
         temp_hashtags = []
         for entry in temp_hashtags_list:  # a list of hashtags in each tweet
-            temp_hashtags.append(entry["text"])   # tweet1 [hashtag1, hashtag2,...], []
+            temp_hashtags.append(entry["text"])  # tweet1 [hashtag1, hashtag2,...], []
         area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
         # Construct and merge into dictionary -- area : num_tweets
         if area not in grid_cor_dict.keys():
@@ -43,10 +43,11 @@ def doOperation_on_tweets(tweet_file, grid):
 
 
 def get_FileName(argv):
-    if len(argv) > 1:
-        return argv[1]
+    if len(argv) > 2:
+        return argv[2]
     else:
         return "bigTwitter.json"
+
 
 def print_result(grid_dict, hashtag_dict):
     print("Results showing: \n")
@@ -63,17 +64,17 @@ def which_grid_box(cor_x, cor_y, grid):
     area = None
     for box in grid:
         if cor_x >= box["xmin"] and cor_x <= box["xmax"] \
-         and cor_y >= box["ymin"] and cor_y <= box["ymax"]:
+                and cor_y >= box["ymin"] and cor_y <= box["ymax"]:
             area = box["id"]
     return area
 
 
 def order_dict(dict_items):
     sortedDict = sorted(dict_items, reverse=True, key=lambda x: x[-1])
-    return  sortedDict
+    return sortedDict
 
 
-def order_hashtags(dict):
+def order_hashtags(dict_obj):
     new_dict = {}
     for k, v in dict.items():
         top5_list = order_dict(Counter(v).items())[:5]
@@ -81,9 +82,9 @@ def order_hashtags(dict):
     return new_dict
 
 
-def merge_results(dict):
+def merge_results(dict_obj):
     new_dict = {}
-    for entry in dict:
+    for entry in dict_obj:
         for k, v in entry.items():
             if k not in new_dict:
                 new_dict[k] = v
@@ -97,7 +98,7 @@ def main(argv):
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    melbGrid = get_Grid(argv[0])
+    melbGrid = get_Grid(argv[1])
 
     grid_cor_dict = {}
     grid_hashtag_dict = {}
@@ -137,10 +138,11 @@ def main(argv):
             # results show
             print_result(ordered_grid_list, ordered_hastag_dict)
 
+
 if __name__ == "__main__":
     # argv = ["/Users/jethrolong/Desktop/melbGrid.json",
     #         "/Users/jethrolong/Desktop/smallTwitter.json"]
     time_start = time.time()
     main(sys.argv)
     time_end = time.time()
-    print("Total time used: %.3f sec." %(time_end - time_start))
+    print("Total time used: %.3f sec." % (time_end - time_start))
