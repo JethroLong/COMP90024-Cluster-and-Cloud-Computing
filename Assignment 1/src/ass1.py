@@ -76,7 +76,7 @@ def order_dict(dict_items):
 
 def order_hashtags(dict_obj):
     new_dict = {}
-    for k, v in dict.items():
+    for k, v in dict_obj.items():
         top5_list = order_dict(Counter(v).items())[:5]
         new_dict[k] = top5_list
     return new_dict
