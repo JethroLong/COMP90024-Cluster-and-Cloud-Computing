@@ -142,6 +142,7 @@ def main(argv):
 if __name__ == "__main__":
     # argv = ["/Users/jethrolong/Desktop/melbGrid.json",
     #         "/Users/jethrolong/Desktop/smallTwitter.json"]
+    # commi
     time_start = time.time()
     main(sys.argv)
     time_end = time.time()
