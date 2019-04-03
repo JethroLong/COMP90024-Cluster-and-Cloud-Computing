@@ -7,7 +7,7 @@ import time
 
 
 def get_Grid(gridFile):
-    with open(gridFile, 'r') as melbGrid:
+    with open(gridFile, 'r', encoding="utf-8") as melbGrid:
         gridData = json.load(melbGrid)
         grid = []
         for box in gridData["features"]:
@@ -103,7 +103,7 @@ def main(argv):
     grid_cor_dict = {}
     grid_hashtag_dict = {}
 
-    with open(get_FileName(argv), 'r') as f:
+    with open(get_FileName(argv), 'r', encoding="utf-8") as f:
         records = json.loads(f.read())["rows"]
         num_records = len(records)
         len_chunks = int(math.ceil(num_records / size))
@@ -142,6 +142,7 @@ def main(argv):
 if __name__ == "__main__":
     # argv = ["/Users/jethrolong/Desktop/melbGrid.json",
     #         "/Users/jethrolong/Desktop/smallTwitter.json"]
+    # commi
     time_start = time.time()
     main(sys.argv)
     time_end = time.time()
