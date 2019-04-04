@@ -20,7 +20,7 @@ def doOperation_on_tweets(tweet_file, grid):
     grid_hashtag_dict = {}  # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
     for each in tweet_file:
         # lookup coordinates
-        temp_cor_list = each["value"]["geometry"]["coordinates"]
+        temp_cor_list = each["doc"]["coordinates"]["coordinates"]
         temp_hashtags_list = each["doc"]["entities"]["hashtags"]
         temp_hashtags = []
         for entry in temp_hashtags_list:  # a list of hashtags in each tweet
