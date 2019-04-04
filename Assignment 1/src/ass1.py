@@ -1,7 +1,6 @@
 from mpi4py import MPI
 from collections import Counter
 import json
-import math
 import sys
 import time
 
@@ -15,31 +14,28 @@ def get_Grid(gridFile):
     return grid
 
 
-def doOperation_on_tweets(tweet_file, grid):
-    grid_cor_dict = {}
-    grid_hashtag_dict = {}  # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
-    for each in tweet_file:
+def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
+    # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
         # lookup coordinates
-        temp_cor_list = each["value"]["geometry"]["coordinates"]
-        temp_hashtags_list = each["doc"]["entities"]["hashtags"]
-        temp_hashtags = []
-        for entry in temp_hashtags_list:  # a list of hashtags in each tweet
-            temp_hashtags.append(entry["text"])  # tweet1 [hashtag1, hashtag2,...], []
-        area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
-        # Construct and merge into dictionary -- area : num_tweets
-        if area not in grid_cor_dict.keys():
-            if area is not None:
-                grid_cor_dict[area] = 1
-        else:
-            grid_cor_dict[area] += 1
-        # Construct and merge into dictionary -- {area : [hashtag1, hashtag2, hashtag1,...]}
-        if area not in grid_hashtag_dict.keys():
-            if area is not None:
-                grid_hashtag_dict[area] = temp_hashtags
-                # print("here new : ", grid_hashtag_dict)
-        else:
-            grid_hashtag_dict[area] += temp_hashtags
-    return grid_cor_dict, grid_hashtag_dict
+    temp_cor_list = tweet["value"]["geometry"]["coordinates"]
+    temp_hashtags_list = tweet["doc"]["entities"]["hashtags"]
+    temp_hashtags = []
+    for entry in temp_hashtags_list:  # a list of hashtags in each tweet
+        temp_hashtags.append(entry["text"])  # tweet1 [hashtag1, hashtag2,...], []
+    area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
+    # Construct and merge into dictionary -- area : num_tweets
+    if area not in grid_cor_dict.keys():
+        if area is not None:
+            grid_cor_dict[area] = 1
+    else:
+        grid_cor_dict[area] += 1
+    # Construct and merge into dictionary -- {area : [hashtag1, hashtag2, hashtag1,...]}
+    if area not in grid_hashtag_dict.keys():
+        if area is not None:
+            grid_hashtag_dict[area] = temp_hashtags
+            # print("here new : ", grid_hashtag_dict)
+    else:
+        grid_hashtag_dict[area] += temp_hashtags
 
 
 def get_FileName(argv):
@@ -104,25 +100,19 @@ def main(argv):
     grid_hashtag_dict = {}
 
     with open(get_FileName(argv), 'r', encoding="utf-8") as f:
-        records = json.loads(f.read())["rows"]
-        num_records = len(records)
-        len_chunks = int(math.ceil(num_records / size))
-        start_Row = rank * len_chunks
-        if (rank + 1) * len_chunks > num_records:
-            grid_cor_dict, gird_hashtag_dict = doOperation_on_tweets(
-                records[start_Row:], melbGrid)
-            # print("\n Process #{}: with grid_cor_dict{}".format(rank, grid_cor_dict))
-            # print("Process #{}: with grid_hashtag_dict{}".format(rank, grid_hashtag_dict))
-            grid_cor_dict = comm.gather(grid_cor_dict, root=0)
-            grid_hashtag_dict = comm.gather(grid_hashtag_dict, root=0)
+        row_indicator = 0
+        for line in f:
+            if not (line.endswith("[\n") or line.endswith("]}\n")):
+                row_indicator += 1
+                if rank == (row_indicator % size):
+                    if line.endswith("}},\n"):
+                        line = line[:-2]
+                    else:
+                        line = line[:-1]
+                    doOperation_on_tweets(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
-        else:
-            grid_cor_dict, gird_hashtag_dict = doOperation_on_tweets(
-                records[start_Row:(start_Row + len_chunks)], melbGrid)
-            # print("\n Process #{}: with grid_cor_dict{}".format(rank, grid_cor_dict))
-            # print("Process #{}: with gird_hashtag_dict{}".format(rank, grid_hashtag_dict))
-            grid_cor_dict = comm.gather(grid_cor_dict, root=0)
-            grid_hashtag_dict = comm.gather(gird_hashtag_dict, root=0)
+        grid_cor_dict = comm.gather(grid_cor_dict, root=0)
+        grid_hashtag_dict = comm.gather(grid_hashtag_dict, root=0)
 
         comm.barrier()
         if rank == 0:
