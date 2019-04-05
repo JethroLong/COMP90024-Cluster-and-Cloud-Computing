@@ -1,7 +1,17 @@
 import csv
 import json
+import re
 import ijson
 from collections import Counter
+
+HASHTAG_REGEX = "\s#\S+\s"
+
+def find_hashtags(tweet, regex):
+    count = []
+    entries = re.findall(regex, tweet["doc"]["text"])
+    for entry in entries:
+        count.append(entry.strip())
+    return count
 
 if __name__ == "__main__":
     with open("/Users/jethrolong/Desktop/bigTwitter.json", 'r') as f:
@@ -29,18 +39,18 @@ if __name__ == "__main__":
         # print(json.loads(f2))
 
         # try tp customize string lines
-        row_indicator = 0
-        records = []
-        for line in f:
-            if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
-                row_indicator += 1
-                if line.endswith("}},\n"):
-                    line = line[:-2]
-                else:
-                    line = line[:-1]
-                tweet = json.loads(line)
-                if tweet["doc"]["coordinates"] is None:
-                    print("None worked #", row_indicator,"  ", tweet)
+        # row_indicator = 0
+        # records = []
+        # # for line in f:
+        # #     if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
+        # #         row_indicator += 1
+        # #         if line.endswith("}},\n"):
+        # #             line = line[:-2]
+        # #         else:
+        # #             line = line[:-1]
+        # #         tweet = json.loads(line)
+        #         if tweet["doc"]["coordinates"] is None:
+        #             print("None worked #", row_indicator,"  ", tweet)
                 # print("#",row_indicator, "  ",line)
 
                 # records.append(json.loads(line))
@@ -53,6 +63,28 @@ if __name__ == "__main__":
         #         print("index: ",i)
         #         break
         #     i += 1
+
+        # try regex to extract hashtags
+
+        # row_indicator = 0
+        # for line in f:
+        #     if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
+        #         row_indicator += 1
+        #         if line.endswith("}},\n"):
+        #             line = line[:-2]
+        #         else:
+        #             line = line[:-1]
+        #         tweet = json.loads(line)
+        #         hashtag_list = find_hashtags(tweet, HASHTAG_REGEX)
+        #         print(hashtag_list)
+        #         if row_indicator == 100:
+        #             break
+
+        #test on Counter
+        hashtag_list = ['melbourne', 'melbourne', 'Melbourne', 'a', 'A']
+        count = Counter([x.upper() for x in hashtag_list])
+        print(count)
+
 
 
 
