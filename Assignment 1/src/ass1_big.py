@@ -14,15 +14,22 @@ def get_Grid(gridFile):
     return grid
 
 
-def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
+def doOperation_on_tweet(tweet, grid, grid_cor_dict, grid_hashtag_dict):
+    temp_cor_list = []
+    if tweet["doc"]["coordinates"] is None:
+        if tweet["doc"]["geo"] is None:
+            return
+        else:
+            temp_cor_list = tweet["doc"]["geo"]["coordinates"][::-1]
+    else:
+        temp_cor_list = tweet["doc"]["coordinates"]["coordinates"]
+    area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
+
     # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
-        # lookup coordinates
-    temp_cor_list = tweet["doc"]["coordinates"]["coordinates"]
     temp_hashtags_list = tweet["doc"]["entities"]["hashtags"]
     temp_hashtags = []
     for entry in temp_hashtags_list:  # a list of hashtags in each tweet
         temp_hashtags.append(entry["text"])  # tweet1 [hashtag1, hashtag2,...], []
-    area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
     # Construct and merge into dictionary -- area : num_tweets
     if area not in grid_cor_dict.keys():
         if area is not None:
@@ -36,6 +43,7 @@ def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
             # print("here new : ", grid_hashtag_dict)
     else:
         grid_hashtag_dict[area] += temp_hashtags
+    return
 
 
 def get_FileName(argv):
@@ -47,12 +55,13 @@ def get_FileName(argv):
 
 def print_result(grid_dict, hashtag_dict):
     print("Results showing: \n")
-    print("-------------------------------------------------------------------")
+    print("===================================================================")
     for each in grid_dict:
         print("Grid {}: {} tweets. Trending hashtags:".format(each[0], each[1]))
         for hashtag in hashtag_dict[each[0]]:
             print("                                        {}".format(hashtag))
-    print("-------------------------------------------------------------------")
+    print("===================================================================")
+    print("___________________________________________________________________")
 
 
 # Decide which grid box a given point with its x, y coordinates belongs to
@@ -96,20 +105,21 @@ def main(argv):
 
     melbGrid = get_Grid(argv[1])
 
+    # Each process keeps these two dictionaries
     grid_cor_dict = {}
     grid_hashtag_dict = {}
 
     with open(get_FileName(argv), 'r', encoding="utf-8") as f:
         row_indicator = 0
         for line in f:
-            if not (line.endswith("[\n") or line.endswith("]}\n")):
+            if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
                 row_indicator += 1
                 if rank == (row_indicator % size):
                     if line.endswith("}},\n"):
                         line = line[:-2]
                     else:
                         line = line[:-1]
-                    doOperation_on_tweets(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
+                    doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
         grid_cor_dict = comm.gather(grid_cor_dict, root=0)
         grid_hashtag_dict = comm.gather(grid_hashtag_dict, root=0)

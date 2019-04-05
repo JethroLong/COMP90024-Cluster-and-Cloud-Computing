@@ -4,7 +4,7 @@ import ijson
 from collections import Counter
 
 if __name__ == "__main__":
-    with open("/Users/jethrolong/Desktop/smallTwitter.json", 'r') as f:
+    with open("/Users/jethrolong/Desktop/bigTwitter.json", 'r') as f:
         # parser = ijson.parse(f,1)
         # for prefix, event, value in parser:
         #     print('prefix={}, event={}, value={}'.format(prefix, event, value))
@@ -28,14 +28,31 @@ if __name__ == "__main__":
         # print(f2)
         # print(json.loads(f2))
 
-        # try seek
+        # try tp customize string lines
         row_indicator = 0
+        records = []
         for line in f:
-            if not (line.endswith("[\n") or line.endswith("]}\n")):
+            if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
                 row_indicator += 1
                 if line.endswith("}},\n"):
                     line = line[:-2]
                 else:
                     line = line[:-1]
-                print(json.loads(line), row_indicator)
+                tweet = json.loads(line)
+                if tweet["doc"]["coordinates"] is None:
+                    print("None worked #", row_indicator,"  ", tweet)
+                # print("#",row_indicator, "  ",line)
+
+                # records.append(json.loads(line))
+
+        # i = 0
+        # for each in records:
+        #     if each["doc"]["coordinates"]["coordinates"] != each["doc"]["geo"]["coordinates"][::-1]:
+        #         print("1st place: ",each["doc"]["coordinates"]["coordinates"])
+        #         print("snd place: ",each["doc"]["geo"]["coordinates"][::-1])
+        #         print("index: ",i)
+        #         break
+        #     i += 1
+
+
 
