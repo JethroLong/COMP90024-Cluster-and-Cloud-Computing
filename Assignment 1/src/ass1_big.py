@@ -3,7 +3,17 @@ from collections import Counter
 import json
 import sys
 import time
+import re
 
+# CONSTANTS
+HASHTAG_REGEX = "\s#\w+\s"
+
+def find_hashtags(tweet, regex):
+    hashtags = []
+    entries = re.findall(regex, tweet["doc"]["text"])
+    for entry in entries:
+        hashtags.append(entry.strip())
+    return hashtags
 
 def get_Grid(gridFile):
     with open(gridFile, 'r', encoding="utf-8") as melbGrid:
@@ -26,10 +36,7 @@ def doOperation_on_tweet(tweet, grid, grid_cor_dict, grid_hashtag_dict):
     area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
 
     # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
-    temp_hashtags_list = tweet["doc"]["entities"]["hashtags"]
-    temp_hashtags = []
-    for entry in temp_hashtags_list:  # a list of hashtags in each tweet
-        temp_hashtags.append(entry["text"])  # tweet1 [hashtag1, hashtag2,...], []
+    temp_hashtags_list = find_hashtags(tweet, HASHTAG_REGEX)
     # Construct and merge into dictionary -- area : num_tweets
     if area not in grid_cor_dict.keys():
         if area is not None:
@@ -39,10 +46,10 @@ def doOperation_on_tweet(tweet, grid, grid_cor_dict, grid_hashtag_dict):
     # Construct and merge into dictionary -- {area : [hashtag1, hashtag2, hashtag1,...]}
     if area not in grid_hashtag_dict.keys():
         if area is not None:
-            grid_hashtag_dict[area] = temp_hashtags
+            grid_hashtag_dict[area] = temp_hashtags_list
             # print("here new : ", grid_hashtag_dict)
     else:
-        grid_hashtag_dict[area] += temp_hashtags
+        grid_hashtag_dict[area] += temp_hashtags_list
     return
 
 
@@ -82,7 +89,7 @@ def order_dict(dict_items):
 def order_hashtags(dict_obj):
     new_dict = {}
     for k, v in dict_obj.items():
-        top5_list = order_dict(Counter(v).items())[:5]
+        top5_list = order_dict(Counter(v.upper()).items())[:5]
         new_dict[k] = top5_list
     return new_dict
 
