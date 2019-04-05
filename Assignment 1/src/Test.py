@@ -13,6 +13,34 @@ def find_hashtags(tweet, regex):
         count.append(entry.strip())
     return count
 
+
+# {"A1": [('tag1', 10), ('tag2', 9), ('tag3', 8), ('tag4', 7), ('tag5', 6), ("tag6", 2)],
+# "B1": [('tag1', 7), ('tag2', 7), ('tag3', 6), ('tag4', 5), ('tag5', 4), ("tag6", 3), ("tag7", 2), ("tag8", 1)]}
+
+def resolve_tie(sorted_dict_obj):
+    top5_dict = {}
+    longest_tie = -1
+    for k, v in sorted_dict_obj.items():
+        next_most = v[0][1]  # occurrences of seq[0] --a hashtag
+        tie_list = []
+        top_count = 0
+        top5_dict[k] = []
+        for seq in v:
+            if seq[1] == next_most:
+                tie_list.append(seq)
+            else:
+                if top_count < 5:
+                    next_most = seq[1]
+                    longest_tie = max(longest_tie, len(tie_list))
+                    top5_dict[k].append(tie_list)
+                    top_count += 1
+                else:
+                    break
+                tie_list = []
+                tie_list.append(seq)
+    return top5_dict, longest_tie
+
+
 if __name__ == "__main__":
     with open("/Users/jethrolong/Desktop/bigTwitter.json", 'r') as f:
         # parser = ijson.parse(f,1)
@@ -81,9 +109,19 @@ if __name__ == "__main__":
         #             break
 
         #test on Counter
-        hashtag_list = ['melbourne', 'melbourne', 'Melbourne', 'a', 'A']
-        count = Counter([x.upper() for x in hashtag_list])
-        print(count)
+        # hashtag_list = ['melbourne', 'melbourne', 'Melbourne', 'a', 'A']
+        # count = Counter([x.upper() for x in hashtag_list])
+        # print(count)
+
+        hashtag_dict = {"A1": [('tag1', 10), ('tag2', 9), ("tagss", 9), ('tag3', 8), ('tag4', 7), ('tag5', 6), ("tag6", 2)],
+                        "B1": [('tag1', 7), ('tag2', 7), ('tag3', 6), ('tag4', 5), ('tag5', 4), ("tag6", 3), ("tag7", 2), ("tag8", 1)]
+                        }
+        top5, longest= resolve_tie(hashtag_dict)
+        for k, v in top5.items():
+            print("Grid {}, tags:  ".format(k))
+            for each in v:
+                print("             {}".format(each))
+        print(longest)
 
 
 
