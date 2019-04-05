@@ -14,9 +14,9 @@ def get_Grid(gridFile):
     return grid
 
 
-def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
+def doOperation_on_tweet(tweet, grid, grid_cor_dict, grid_hashtag_dict):
     temp_cor_list = []
-    if tweet["value"]["coordinates"] is None:
+    if tweet["doc"]["coordinates"] is None:
         if tweet["doc"]["geo"] is None:
             return
         else:
@@ -24,6 +24,8 @@ def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
     else:
         temp_cor_list = tweet["doc"]["coordinates"]["coordinates"]
     area = which_grid_box(temp_cor_list[0], temp_cor_list[1], grid)
+
+    # {“A1”:[[hashtag1_from_tweet1, hashtag2_from_tweet1],[hashtag1_from_tweet2, hashtag2_from_tweet2]]}
     temp_hashtags_list = tweet["doc"]["entities"]["hashtags"]
     temp_hashtags = []
     for entry in temp_hashtags_list:  # a list of hashtags in each tweet
@@ -41,6 +43,7 @@ def doOperation_on_tweets(tweet, grid, grid_cor_dict, grid_hashtag_dict):
             # print("here new : ", grid_hashtag_dict)
     else:
         grid_hashtag_dict[area] += temp_hashtags
+    return
 
 
 def get_FileName(argv):
@@ -109,14 +112,14 @@ def main(argv):
     with open(get_FileName(argv), 'r', encoding="utf-8") as f:
         row_indicator = 0
         for line in f:
-            if not (line.endswith("[\n") or line.endswith("]}\n")):
+            if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
                 row_indicator += 1
                 if rank == (row_indicator % size):
                     if line.endswith("}},\n"):
                         line = line[:-2]
                     else:
                         line = line[:-1]
-                    doOperation_on_tweets(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
+                    doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
         grid_cor_dict = comm.gather(grid_cor_dict, root=0)
         grid_hashtag_dict = comm.gather(grid_hashtag_dict, root=0)
