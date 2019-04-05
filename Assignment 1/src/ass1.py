@@ -15,6 +15,7 @@ def find_hashtags(tweet, regex):
         hashtags.append(entry.strip())
     return hashtags
 
+# This function loads file MelbGrid.json and save range of each grid into the list "grid".
 def get_Grid(gridFile):
     with open(gridFile, 'r', encoding="utf-8") as melbGrid:
         gridData = json.load(melbGrid)
@@ -53,6 +54,7 @@ def doOperation_on_tweet(tweet, grid, grid_cor_dict, grid_hashtag_dict):
     return
 
 
+# Get file names from users' input.
 def get_FileName(argv):
     if len(argv) > 2:
         return argv[2]
@@ -60,6 +62,7 @@ def get_FileName(argv):
         return "bigTwitter.json"
 
 
+# Print result
 def print_result(grid_dict, hashtag_dict):
     print("Results showing: \n")
     print("===================================================================")
@@ -80,12 +83,12 @@ def which_grid_box(cor_x, cor_y, grid):
             area = box["id"]
     return area
 
-
+# A function to sort dictionaries
 def order_dict(dict_items):
     sortedDict = sorted(dict_items, reverse=True, key=lambda x: x[-1])
     return sortedDict
 
-
+# Find the top 5 frequency hashtags in each grid
 def order_hashtags(dict_obj):
     new_dict = {}
     for k, v in dict_obj.items():
@@ -94,6 +97,7 @@ def order_hashtags(dict_obj):
     return new_dict
 
 
+# Merge results from different processes
 def merge_results(dict_obj):
     new_dict = {}
     for entry in dict_obj:
@@ -120,6 +124,8 @@ def main(argv):
         row_indicator = 0
         for line in f:
             if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
+            #check if a Json String is valid
+            if not (line.endswith("[\n") or line.endswith("]}\n")):
                 row_indicator += 1
                 if rank == (row_indicator % size):
                     if line.endswith("}},\n"):
@@ -128,9 +134,11 @@ def main(argv):
                         line = line[:-1]
                     doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
+        #
         grid_cor_dict = comm.gather(grid_cor_dict, root=0)
         grid_hashtag_dict = comm.gather(grid_hashtag_dict, root=0)
 
+        #Sychronize different processes
         comm.barrier()
         if rank == 0:
             # reduction -- gridboxes
