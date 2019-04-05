@@ -20,7 +20,7 @@ import time
 import re
 
 # CONSTANTS
-HASHTAG_REGEX = "\s#\w+\s"
+HASHTAG_REGEX = "\s#\S+\s"
 
 
 # This function takes a tweet record and a regular expression (REGEX) as inputs to
@@ -82,8 +82,8 @@ def get_FileName(argv):
 # This function gives a comprehensive demonstration of the final results of tweet processing
 def print_result(grid_dict, hashtag_dict, longest):
     print("\nResults showing:")
-    print("_______________________" * (longest + 2))
-    print("=======================" * (longest + 2))
+    print("___________________________" * (longest + 1))
+    print("===========================" * (longest + 1))
     for each in grid_dict:
         print("Grid {}: {:7} tweets. Trending hashtags:   ".format(each[0], each[1]), end="")
         for hashtag in hashtag_dict[each[0]]:
@@ -92,7 +92,7 @@ def print_result(grid_dict, hashtag_dict, longest):
             print()
             print("".ljust(46, " "), end="")
         print()
-    print("=======================" * (longest + 2))
+    print("===========================" * (longest + 1))
 
 
 # Decide which grid box a tweet belongs to with its x, y coordinates
@@ -191,7 +191,7 @@ def main(argv):
                             line = line[:-2]
                         else:
                             line = line[:-1]
-                doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
+                        doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
         # Sychronize different processes before MASTER starts final results processing
         comm.barrier()
@@ -218,7 +218,7 @@ def main(argv):
 
             # results show
             print_result(ordered_grid_list, top5_hashtag_list, longest_tie)
-            print("Total time used (average): %.3f sec." % (sum(time_diff) / len(time_diff)))
+            print("Total time used (average): %.3f sec." % (sum(time_diff) / len(time_diff)) + "\n")
 
 
 if __name__ == "__main__":
