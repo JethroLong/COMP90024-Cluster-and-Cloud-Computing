@@ -123,16 +123,16 @@ def main(argv):
     with open(get_FileName(argv), 'r', encoding="utf-8") as f:
         row_indicator = 0
         for line in f:
+            # Check if a Json String is valid
             if not (line.endswith("[\n") or line.endswith("]}\n") or line.endswith("]}")):
-            #check if a Json String is valid
-            if not (line.endswith("[\n") or line.endswith("]}\n")):
-                row_indicator += 1
-                if rank == (row_indicator % size):
-                    if line.endswith("}},\n"):
-                        line = line[:-2]
-                    else:
-                        line = line[:-1]
-                    doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
+                if not (line.endswith("[\n") or line.endswith("]}\n")):
+                    row_indicator += 1
+                    if rank == (row_indicator % size):
+                        if line.endswith("}},\n"):
+                            line = line[:-2]
+                        else:
+                            line = line[:-1]
+                        doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
         #
         grid_cor_dict = comm.gather(grid_cor_dict, root=0)
