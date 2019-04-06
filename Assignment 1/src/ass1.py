@@ -94,12 +94,14 @@ def print_result(grid_dict, hashtag_dict, longest):
     print("===========================" * (longest + 1))
 
 
-# Decide which grid box a tweet belongs to with its x, y coordinates
+# Decide which grid box a tweet belongs to with its x, y coordinates.
+# Two classifiers ensure all tweets that exactly fall on grid boarders won't miss.
+# A tweet will be filtered out only when it fails both classification processes.
 def which_grid_box(cor_x, cor_y, grid):
-    for box in grid:
+    for box in grid:  # implement up-left rule to classify tweets
         if box["xmin"] < cor_x <= box["xmax"] and (box["ymin"] <= cor_y < box["ymax"]):
             return box["id"]
-    for box in grid:
+    for box in grid:  # For those who failed the first classifier, do second classification with down-right rule
         if box["xmin"] <= cor_x < box["xmax"] and (box["ymin"] < cor_y <= box["ymax"]):
             return box["id"]
     return None
