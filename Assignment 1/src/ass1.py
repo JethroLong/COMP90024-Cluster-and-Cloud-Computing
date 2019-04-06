@@ -96,11 +96,13 @@ def print_result(grid_dict, hashtag_dict, longest):
 
 # Decide which grid box a tweet belongs to with its x, y coordinates
 def which_grid_box(cor_x, cor_y, grid):
-    area = None
     for box in grid:
-        if box["xmin"] <= cor_x <= box["xmax"] and (box["ymin"] <= cor_y <= box["ymax"]):
-            area = box["id"]
-    return area
+        if box["xmin"] < cor_x <= box["xmax"] and (box["ymin"] <= cor_y < box["ymax"]):
+            return box["id"]
+    for box in grid:
+        if box["xmin"] <= cor_x < box["xmax"] and (box["ymin"] < cor_y <= box["ymax"]):
+            return box["id"]
+    return None
 
 
 # Sort a List deriving from dictionary into descending order (based on the value v in [k, v])
@@ -192,7 +194,7 @@ def main(argv):
                             line = line[:-1]
                         doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
-        # Sychronize different processes before MASTER starts final results processing
+        # Synchronize different processes before MASTER starts final results processing
         comm.barrier()
         time_end = time.time()
 

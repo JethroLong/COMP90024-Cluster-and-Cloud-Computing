@@ -97,11 +97,13 @@ def print_result(grid_dict, hashtag_dict, longest):
 
 # Decide which grid box a tweet belongs to with its x, y coordinates
 def which_grid_box(cor_x, cor_y, grid):
-    area = None
     for box in grid:
-        if box["xmin"] <= cor_x <= box["xmax"] and (box["ymin"] <= cor_y <= box["ymax"]):
-            area = box["id"]
-    return area
+        if box["xmin"] < cor_x <= box["xmax"] and (box["ymin"] <= cor_y < box["ymax"]):
+            return box["id"]
+    for box in grid:
+        if box["xmin"] <= cor_x < box["xmax"] and (box["ymin"] < cor_y <= box["ymax"]):
+            return box["id"]
+    return None
 
 
 # Sort a List deriving from dictionary into descending order (based on the value v in [k, v])
