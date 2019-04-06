@@ -196,7 +196,7 @@ def main(argv):
                             line = line[:-1]
                         doOperation_on_tweet(json.loads(line), melbGrid, grid_cor_dict, grid_hashtag_dict)
 
-        # Sychronize different processes before MASTER starts final results processing
+        # Synchronize different processes before MASTER starts final results processing
         comm.barrier()
         time_end = time.time()
 
