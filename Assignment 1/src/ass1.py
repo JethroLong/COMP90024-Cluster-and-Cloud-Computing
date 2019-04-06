@@ -5,8 +5,8 @@
 # This ass1.py is tailored for tinyTwitter.json and smallTwitter.json
 ########################################################################################
 # @Author: Junyu Long <JethroLong>   Student ID: 871689
-# @Collaborator: Huining Li
-# Email: longj2@student.unimelb.edu.au
+# @Collaborator: Huining Li <huiningl>   Student ID: 870935
+# Email: longj2@student.unimelb.edu.au   huiningl@student.unimelb.edu.au
 # Status: Completed on 05/04/2019
 # Project_URL: <https://github.com/JethroLong/COMP90024-Cluster-and-Cloud-Computing.git>
 ########################################################################################
