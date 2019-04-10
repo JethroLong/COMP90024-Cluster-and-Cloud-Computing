@@ -4,7 +4,7 @@ import re
 import ijson
 from collections import Counter
 
-HASHTAG_REGEX = "\s#\S+\s"
+HASHTAG_REGEX = "\s{1}#\S+\s{1}"
 
 def find_hashtags(tweet, regex):
     count = []
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         #         tweet = json.loads(line)
         #         hashtag_list = find_hashtags(tweet, HASHTAG_REGEX)
         #         print(hashtag_list)
-        #         if row_indicator == 100:
+        #         if row_indicator == 100000:
         #             break
 
         #test on Counter
@@ -113,18 +113,39 @@ if __name__ == "__main__":
         # count = Counter([x.upper() for x in hashtag_list])
         # print(count)
 
-        hashtag_dict = {"A1": [('tag1', 10), ('tag2', 9), ("tagss", 9), ('tag3', 8), ('tag4', 7), ('tag5', 6), ("tag6", 2)],
-                        "B1": [('tag1', 7), ('tag2', 7), ('tag3', 6), ('tag4', 5), ('tag5', 4), ("tag6", 3), ("tag7", 2), ("tag8", 1)]
-                        }
-        top5, longest= resolve_tie(hashtag_dict)
-        for k, v in top5.items():
-            print("Grid {}, tags:  ".format(k))
-            for each in v:
-                print("             {}".format(each))
-        print(longest)
+        # hashtag_dict = {"A1": [('tag1', 10), ('tag2', 9), ("tagss", 9), ('tag3', 8), ('tag4', 7), ('tag5', 6), ("tag6", 2)],
+        #                 "B1": [('tag1', 7), ('tag2', 7), ('tag3', 6), ('tag4', 5), ('tag5', 4), ("tag6", 3), ("tag7", 2), ("tag8", 1)]
+        #                 }
+        # top5, longest= resolve_tie(hashtag_dict)
+        # for k, v in top5.items():
+        #     print("Grid {}, tags:  ".format(k))
+        #     for each in v:
+        #         print("             {}".format(each))
+        # print(longest)
 
+        #try findall()
+        pattern = re.compile(HASHTAG_REGEX)
+        text = " #tag1 #tag2 #tag1 #tag2 #tag3 #tag2#tag1 #tag2#tag1#tag2. #tag1"
+        text = text.replace(" #","  #")
+        # text= re.findall("\s{1}#\S+\s{1}", text)
+        list_a = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), text)
+        list_a = set([x.strip() for x in list_a])
+        # text = text.split(" ")
+        print(list_a)
+        # text = set(text)
+        # hashtag = []
+        # for entry in text:
+        #     if entry.startswith("#"):
+        #         hashtag.append(entry)
+        # # matches = re.finditer(pattern, text)
+        # # list_a = re.findall(HASHTAG_REGEX, text)
+        # # list_b = re.split(HASHTAG_REGEX, text)
+        # # list_c = re.fullmatch(HASHTAG_REGEX, text)
+        # # list_d = [match.group() for match in matches]
+        #
+        # print(hashtag)
 
-
+        # print(re.finditer(HASHTAG_REGEX, text))
 
 
 
