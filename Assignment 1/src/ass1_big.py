@@ -19,9 +19,8 @@ import sys
 import time
 import re
 
-
 # CONSTANTS
-HASHTAG_REGEX = "(?=(\s#\S+\s))"
+HASHTAG_REGEX = "\s#\S+\s"
 
 
 # This function takes a tweet record and a regular expression (REGEX) as inputs to
