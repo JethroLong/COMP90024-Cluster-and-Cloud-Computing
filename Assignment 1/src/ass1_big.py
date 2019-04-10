@@ -26,11 +26,10 @@ HASHTAG_REGEX = "(?=(\s#\S+\s))"
 
 # This function takes a tweet record and a regular expression (REGEX) as inputs to
 # find all matched patterns -- Hashtags with pattern " #STRING " in this scenario
-def find_hashtags(tweet, regex):
+def find_hashtags(tweet, Regex):
     hashtags = []
-    entries = re.findall(regex, tweet["doc"]["text"])
-    for entry in entries:
-        hashtags.append(entry.strip())
+    hashtags = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), tweet["doc"]["text"])
+    hashtags = list(set([x.strip() for x in hashtags]))
     return hashtags
 
 
@@ -107,6 +106,7 @@ def which_grid_box(cor_x, cor_y, grid):
         if box["xmin"] <= cor_x < box["xmax"] and (box["ymin"] < cor_y <= box["ymax"]):
             return box["id"]
     return None
+
 
 # Sort a List deriving from dictionary into descending order (based on the value v in [k, v])
 def order_dict(dict_items):
