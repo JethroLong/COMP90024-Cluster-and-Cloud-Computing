@@ -6,12 +6,11 @@ from collections import Counter
 
 HASHTAG_REGEX = "\s{1}#\S+\s{1}"
 
-def find_hashtags(tweet, regex):
-    count = []
-    entries = re.findall(regex, tweet["doc"]["text"])
-    for entry in entries:
-        count.append(entry.strip())
-    return count
+def find_hashtags(tweet, Regex):
+    hashtags = []
+    hashtags = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), tweet["doc"]["text"])
+    hashtags = list(set([x.strip() for x in hashtags]))
+    return hashtags
 
 
 # {"A1": [('tag1', 10), ('tag2', 9), ('tag3', 8), ('tag4', 7), ('tag5', 6), ("tag6", 2)],
@@ -124,14 +123,15 @@ if __name__ == "__main__":
         # print(longest)
 
         #try findall()
-        pattern = re.compile(HASHTAG_REGEX)
-        text = " #tag1 #tag2 #tag1 #tag2 #tag3 #tag2#tag1 #tag2#tag1#tag2. #tag1"
-        text = text.replace(" #","  #")
-        # text= re.findall("\s{1}#\S+\s{1}", text)
-        list_a = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), text)
-        list_a = set([x.strip() for x in list_a])
-        # text = text.split(" ")
-        print(list_a)
+        # pattern = re.compile(HASHTAG_REGEX)
+        # text = "#tag1 #tag2... #tag4     #tag2 #tag3 #tag2#tag1    #tag2#tag1#tag2. #tag5"
+        # # text = text.replace(" #","  #")
+        # # text= re.findall("\s{1}#\S+\s{1}", text)
+        # list_a = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), text)
+        # # list_a = re.findall(HASHTAG_REGEX, text)
+        # list_a = set([x.strip() for x in list_a])
+        # # text = text.split()
+        # print(list_a)
         # text = set(text)
         # hashtag = []
         # for entry in text:
@@ -147,6 +147,12 @@ if __name__ == "__main__":
 
         # print(re.finditer(HASHTAG_REGEX, text))
 
+        # overlapping regex
+        pattern = "ana"
+        text = "banana"
+        result = re.findall(r'(?=({}))'.format(pattern), text)
+        result = list(set(result))
+        print(result)
 
 
 

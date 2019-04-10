@@ -27,7 +27,7 @@ HASHTAG_REGEX = "\s#\S+\s"
 def find_hashtags(tweet, Regex):
     hashtags = []
     hashtags = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), tweet["doc"]["text"])
-    hashtags = list(set([x.strip() for x in hashtags]))
+    hashtags = [x.strip() for x in list(set(hashtags))]
     return hashtags
 
 
