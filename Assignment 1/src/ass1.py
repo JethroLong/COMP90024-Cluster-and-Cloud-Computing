@@ -26,7 +26,7 @@ HASHTAG_REGEX = "\s#\S+\s"
 # find all matched patterns -- Hashtags with pattern " #STRING " in this scenario
 def find_hashtags(tweet, Regex):
     hashtags = []
-    hashtags = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), tweet["doc"]["text"])
+    hashtags = re.findall(r'(?=({}))'.format(Regex), tweet["doc"]["text"])
     hashtags = [x.strip() for x in list(set(hashtags))]
     return hashtags
 

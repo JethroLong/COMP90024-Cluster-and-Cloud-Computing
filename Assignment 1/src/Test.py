@@ -124,14 +124,15 @@ if __name__ == "__main__":
 
         #try findall()
         # pattern = re.compile(HASHTAG_REGEX)
-        # text = "#tag1 #tag2... #tag4     #tag2 #tag3 #tag2#tag1    #tag2#tag1#tag2. #tag5"
+        text = " #tag1 #tag2 #tag3 #tag4 "
+        text_1 = "#tag1 #tag2... #tag4     #tag2 #tag3 #tag2#tag1    #tag2#tag1#tag2. #tag5"
         # # text = text.replace(" #","  #")
         # # text= re.findall("\s{1}#\S+\s{1}", text)
-        # list_a = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), text)
-        # # list_a = re.findall(HASHTAG_REGEX, text)
+        list_a = re.findall(r'(?=({}))'.format(HASHTAG_REGEX), text_1)
+        # list_a = re.findall(HASHTAG_REGEX, text_1)
         # list_a = set([x.strip() for x in list_a])
         # # text = text.split()
-        # print(list_a)
+        print(list_a)
         # text = set(text)
         # hashtag = []
         # for entry in text:
@@ -148,11 +149,11 @@ if __name__ == "__main__":
         # print(re.finditer(HASHTAG_REGEX, text))
 
         # overlapping regex
-        pattern = "ana"
-        text = "banana"
-        result = re.findall(r'(?=({}))'.format(pattern), text)
-        result = list(set(result))
-        print(result)
+        # pattern = "ana"
+        # text = "banana"
+        # result = re.findall(r'(?=({}))'.format(pattern), text)
+        # result = list(set(result))
+        # print(result)
 
 
 
